@@ -44,22 +44,17 @@
 
   <!-- One custom font from google, Cardo, used for body text -->
   <link href='//fonts.googleapis.com/css?family=Cardo&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+
   <!-- maximum scale keeps ipads from doing weird things on orientation change -->
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link href="./css/viewer.css" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@recogito/annotorious-openseadragon@2.7.14/dist/annotorious.min.css">
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="./openseadragon-bin-4.1.0/openseadragon.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@recogito/annotorious-openseadragon@2.7.14/dist/openseadragon-annotorious.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script type="text/javascript" src="./js/jquery.easyModal.min.js"></script>
-    <script type="module" src="./js/utils.js"></script>
-    <script type="module" src="./js/init.js"></script>
-    <script type="module" src="./js/ui.js"></script>
-    <script type="module" src="./js/admin.js"></script>
-    <script type="module" src="./js/story.js"></script>
-    <script type="module" src="./js/main.js"></script>
+    <script type="text/javascript" src="./js/viewer.js">
+    </script>
   </head>
+
   <body>
 
 
@@ -69,10 +64,8 @@
       <!-- button to toggle mode to add annotations live. We don't
            really use except for testing/dev. Starts out hidden, we
           show it if admin interface.  -->
-      <a id="map-annotate-button" onclick="admin.annotate();  return false;"
-      style="display:none;"
-      href="#">DEFINE REGION</a>
-        
+      <a id="map-annotate-button" onclick="annotate(); return false;"
+        href="#">DEFINE REGION</a>
   </div>
 
   <!-- this is where the overlay controls live. It will be added by
@@ -148,15 +141,7 @@
     </h2>
     <div class="container" style="width: 100%">
       <input type="text" id="linkModalUrlField" readonly>
-      <button id="urlviewCopy" onclick="UI.copyToClipboard('linkModalUrlField')"><i class="fa fa-copy"></i></button>
-        </div>
-    <h2 data-i18n-key="region_form">
-      Add this to the narrative file to annotate the chosen Region
-    </h2>
-    <div class="container" style="width: 100%">
-      <input type="text" id="regionField" readonly>
-      <button id="RegionCopy" onclick="UI.copyToClipboard('regionField')"><i class="fa fa-copy"></i></button>
-        </div>
+    </div>
   </div>
 
   </body>

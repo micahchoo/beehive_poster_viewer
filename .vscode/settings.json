@@ -1,0 +1,78 @@
+{
+    "funcList": {
+
+        "doubleSpacing": false,
+        "sort": 0,
+        "filters": [
+            {
+                "extensions": [
+                    ".c",
+                    ".h"
+                ],
+                "native": "/^[a-z]+\\s+\\w+\\(/mgi",
+                "display": "/\\S* +(\\w+)/1"
+            },
+            {
+                "extensions": [
+                    ".js",
+                    ".jsx"
+                ],
+                "native": "/(?:function\\s+\\w+|const\\s+\\w+\\s*=\\s*\\(.*\\)\\s*=>|\\w+\\s*:\\s*function\\s*\\(.*\\)|\\w+\\s*=\\s*function\\s*\\(.*\\))/mgi",
+                "display": "/(?:function\\s+(\\w+)|const\\s+(\\w+)\\s*=\\s*\\(.*\\)\\s*=>|\\w+\\s*:\\s*function\\s*\\(.*\\)|\\w+\\s*=\\s*function\\s*\\(.*\\))/1"
+            },
+            {
+                "extensions": [
+                    ".cpp",
+                    ".hpp"
+                ],
+                "native": "/(?:^\\w+\\s+|^)\\w+[:]*\\w+\\(/mgi",
+                "display": "/[\\S ]+(\\w+)/"
+            },
+            {
+                "extensions": [
+                    ".ts",
+                    ".php"
+                ],
+                "native": "/(?:^|\\s)function\\s+\\w+\\(/mg",
+                "display": "/\\s*function\\s+(\\w+)/1"
+            },
+            {
+                "extensions": [
+                    ".asm"
+                ],
+                "native": "/^\\w+:\\s*$/mg",
+                "display": "/\\w+/"
+            },
+            {
+                "extensions": [
+                    ".ps1"
+                ],
+                "native": "/function\\s+\\w+-?\\w*\\s*{/img",
+                "display": "/function\\s+(\\w+-?\\w*)/1i"
+            },
+            {
+                "extensions": [
+                    ".py"
+                ],
+                "native": "/(?:^def|^class|^\\s+def|^\\s+class)\\s\\w+\\s*\\((?:\\s*|\\w+|[\\w\\*,\\s\\'\"=\\(\\)\\{\\}\\[\\]\\/\\.]+)\\):/img",
+                "display": "/.*\\)/"
+            },
+            {
+                "extensions": [
+                    ".vb",
+                    ".LIB"
+                ],
+                "native": "/(?:^|^public\\s*)function\\s+\\w*/mgi",
+                "display": "/((?:^|public\\s*)function\\s+\\w+)/1i"
+            },
+            {
+                "extensions": [
+                    ".vb",
+                    ".LIB"
+                ],
+                "native": "/(?:^|^public\\s*)sub\\s+\\w*/mgi",
+                "display": "/((?:^|public\\s*)sub\\s+\\w+)/1i"
+            }
+        ]
+    }
+}

@@ -1,4 +1,4 @@
-beehive/* All the javascript we need for the poster viewer in one file
+/* All the javascript we need for the poster viewer in one file
 
   Sorry this file is a bit of a mess organizationally.
 
@@ -249,9 +249,11 @@ function panelReservedPortion() {
 }
 
 
-/* function setupOpenSeadragonViewer() {
-  // Save in global cause we're gonna need to refer to it and stuff
-  //   and we're too lazy to make a closure right now
+
+
+function setupOpenSeadragonViewer() {
+  /* Save in global cause we're gonna need to refer to it and stuff
+     and we're too lazy to make a closure right now */
 
   //eg  "./tiles/mr-inside/mr-inside.dzi"
   var dziFile = "./tiles/" + beehive_poster + "/" + beehive_poster + ".dzi"
@@ -272,33 +274,7 @@ function panelReservedPortion() {
     minZoomImageRatio: 0.7
   });
 }
-*/
-function setupOpenSeadragonViewer() {
-  const dziFile = getDziFilePath(beehive_poster);
-  const viewerConfig = getViewerConfig(dziFile);
 
-  window.openSeadragonViewer = OpenSeadragon(viewerConfig);
-}
-
-function getDziFilePath(poster) {
-  return `./tiles/${poster}/${poster}.dzi`;
-}
-
-function getViewerConfig(dziFile) {
-  return {
-    id: "openseadragon",
-    showNavigator: false,
-    autoHideControls: false,
-    prefixUrl: "./openseadragon-bin-2.3.0/images/",
-    tileSources: dziFile,
-    zoomInButton: 'zoomInBtn',
-    zoomOutButton: 'zoomOutBtn',
-    homeButton: 'fullPosterBtn',
-    minZoomImageRatio: 0.7
-  };
-}
-
-/*
 function addControls() {
   var controls = $("#overlayControls");
   var navControls = $("#navControls");
@@ -424,99 +400,7 @@ function addControls() {
     loadStory(nextLi);
   });
 
-}*/
-function addControls() {
-  const controls = $("#overlayControls");
-  const navControls = $("#navControls");
-  const minimizedButton = $("#showControlsBtn");
-
-  setupFullScreenButton();
-  setupMinimizeButton(controls, minimizedButton);
-  setupShowControlsButton(controls, minimizedButton);
-  setupSceneExpander();
-  setupStoryListClick();
-  setupNavigationButtons();
 }
-
-function setupFullScreenButton() {
-  $("body").on("click", "#fullPageBtn, #fullScreenInstruction", function(event) {
-    event.preventDefault();
-    toggleFullScreen();
-    adjustTipVisibility($(".controlsText").data("beehive-story-li"));
-  });
-
-  if (!OpenSeadragon.supportsFullScreen && !OpenSeadragon.isFullScreen()) {
-    $("#fullPageBtn").css("visibility", "hidden");
-  }
-}
-
-function toggleFullScreen() {
-  if (OpenSeadragon.isFullScreen()) {
-    OpenSeadragon.exitFullScreen();
-  } else {
-    OpenSeadragon.requestFullScreen(document.body);
-  }
-}
-
-function setupMinimizeButton(controls, minimizedButton) {
-  controls.on("click", ".controlsMinimize", function(event) {
-    event.preventDefault();
-    controls.slideUp('slow', function() {
-      minimizedButton.fadeIn();
-    });
-  });
-}
-
-function setupShowControlsButton(controls, minimizedButton) {
-  $("#navControls").on("click", "#showControlsBtn", function(event) {
-    event.preventDefault();
-    minimizedButton.fadeOut(function() {
-      storyListHeightLimit();
-      controls.slideDown('slow', function() {
-        storyListHeightLimit();
-        if ($(".controlsText").is(":visible")) {
-          $(".controlsText").hide();
-          $(".controlsText").fadeIn(1);
-        }
-      });
-    });
-  });
-}
-
-function setupSceneExpander() {
-  $("#overlayControls").on("click", ".scene-expander", function(event) {
-    event.preventDefault();
-    if ($(this).hasClass("open")) {
-      closeStoryList();
-    } else {
-      openStoryList();
-    }
-  });
-}
-
-function setupStoryListClick() {
-  $("#storyList").on("click", ".story", function(event) {
-    event.preventDefault();
-    const li = $(this).closest("li");
-    loadStory(li);
-  });
-}
-
-function setupNavigationButtons() {
-  $(".controls-text-nav").on("click", ".controls-text-nav-prev", function(event) {
-    event.preventDefault();
-    const li = $(".controlsText").data("beehive-story-li");
-    loadStory(li.prev());
-  });
-
-  $(".controls-text-nav").on("click", ".controls-text-nav-next", function(event) {
-    event.preventDefault();
-    const li = $(".controlsText").data("beehive-story-li");
-    const nextLi = (typeof li == 'undefined') ? $("#storyList li").first() : li.next();
-    loadStory(nextLi);
-  });
-}
-
 
 /* Function to create a URL linking to current view, and to
    set current view from URL on load */
@@ -867,12 +751,12 @@ if (paramsToHash(document.location.search).admin === "true") {
 }
 
 jQuery( document ).ready(function( $ ) {
-  setupOpenSeadragonViewer();
-  addControls();
+//  setupOpenSeadragonViewer();
+//  addControls();
   addPermalinkFunc();
 
   // Once on load
-  storyListHeightLimit();
+//  storyListHeightLimit();
 
   applyI18nValues(beehive_lang);
 

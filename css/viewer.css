@@ -378,15 +378,17 @@ html, body{
 }
 #linkModal h1, #linkModal h2, #linkModal h3 {
   font-family: beehiveserif;
+  margin-top:6px;
+  margin-bottom:6px;
 }
 
 #linkModal input[type=text] {
-  display: block;
-  line-height: 30px;
+  display: inline;
+  line-height: 12px;
   padding-left: 6px;
   padding-right: 6px;
 
-  width: 96%;
+  width: 85%;
   margin-left: auto;
   margin-right: auto;
 
@@ -399,7 +401,19 @@ html, body{
 
   font-family: courier, fixed;
 }
+#linkModal button {
+  display: inline;
+  padding-left: 6px;
+  width: 10%;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
 
+#linkModal button i {
+  font-size: 1.5em; /* Adjust the size as needed */
+  color: #000; /* Adjust the color as needed */
+}
 
 /* button to toggle annotation mode, which we aren't really using */
 #map-annotate-button {
