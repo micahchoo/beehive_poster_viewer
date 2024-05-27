@@ -34,7 +34,7 @@ Next, comes a bunch of `<story>` tags, all wrapped in a single '<stories>' tag.
 
 Each story tag defines a scene: a title for that scene (listed in the scene list), the text for that scene, and the boundaries on the poster that should be focused on for that scene.
 
-~~~xml
+```xml
 <story>
       <label>The Colonizers' view</label>
       <region
@@ -49,12 +49,31 @@ Each story tag defines a scene: a title for that scene (listed in the scene list
         draws parallels between colonial history and modern-day capitalism. Outsiders who have no connection with the land have drawn this map, with motives of extraction and profit.
       </html>
     </story>
-~~~
+```
 
 ### Finding the region boundaries
 
 The tricky part is finding the right x/y/height/width for the part of the poster you want to focus on.  There is a feature built into the posterViewer to help you do this. 
 
+On the top left there is a `share link` button. If you zoom to the area where you want to fill the annotation and click the `share link` button, there is a second text field that holds a template that can be pasted into the narrative/*.xml. It gives the region parameters with the enclosing html tags that can be filled in
+
+Template:
+```xml
+<story>
+      <label></label>
+      <region
+        x="0"
+        y="0"
+        width="1.0"
+        height="1.0"
+      />
+      <html>
+      </html>
+    </story>
+```
+
+
+#### Original method I'm still trying to get it working
 Add `&admin=true` to the end of a posterViewer URL for a certain poster. Now you will get a "DEFINE REGION" button in the upper right corner of the poster. 
 
 Zoom and move to somewhere generally containing the area and zoom level of the poster you want to define as a scene region. You may want to hide the narrative box to have a bigger work area.  

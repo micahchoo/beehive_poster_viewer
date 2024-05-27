@@ -45,3 +45,65 @@ Let's say we already have an `mr` folder on our local computer, with the dzi and
 Even using this process, I am still not entirely happy with the image quality. It's just fine when you are zoomed all the way in, but at zoomed out views using reduced/resized tiles, I am noticing some loss of fidelity and color shifting. It's not huge, and isn't neccesarily noticeable at first -- I think it's good enough for now, but I hope to keep working on it and make it even better. 
 
 I am still not exactly sure what is causing this (but increasing the JPG quality level did *not* help), hope to invesitgate further. 
+
+
+## python script using vips
+
+	
+	import os
+
+	vipsbin = 'E:\\BIIIF\\anytypefr\\vips-dev-w64-web-8.15.2\\vips-dev-8.15\\bin'  # Adjust this path to where your libvips binaries are located, this is for windows
+	
+	os.environ['PATH'] = vipsbin + ';' + os.environ['PATH']
+	
+	import pyvips
+	
+	
+	
+	# Set the input folder containing the images
+	
+	input_folder = 'D:/anytypefr'
+	
+	
+	
+	# Set the output folder for the DZI files
+	
+	output_folder = 'D:/anytypefr/output'
+	
+	
+	
+	# Ensure the output folder exists
+	
+	os.makedirs(output_folder, exist_ok=True)
+	
+	
+	
+	# Loop through all files in the input folder
+	
+	for filename in os.listdir(input_folder):
+	
+	    if filename.lower().endswith(('.jpg', '.jpeg', '.png', '.tif', '.tiff')):  # Add more extensions as needed
+	
+	        input_path = os.path.join(input_folder, filename)
+	
+	        output_path = os.path.join(output_folder, os.path.splitext(filename)[0])
+	
+	
+	
+	        # Load the image using pyvips
+	
+	        image = pyvips.Image.new_from_file(input_path, access='sequential')
+	
+	
+	
+	        # Save the image as a DZI file using dzsave
+	
+	        image.dzsave(output_path)
+	
+	
+	
+	        print(f"Converted {filename} to DZI format.")
+	
+	
+	
+	print("Conversion complete.")
