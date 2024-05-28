@@ -53,22 +53,6 @@ jQuery(document).ready(function($) {
 
 
 jQuery( document ).ready(function( $ ) {
-<<<<<<< Updated upstream
-var resulta = window.initFunctions.setupOpenSeadragonViewer(beehive_poster, viewer, anno);
-viewer = resulta.viewer;
-anno = resulta.anno;
-document.getElementById('map-annotate-button').addEventListener('click', function(event) {
-    event.preventDefault(); // Prevent the default link behavior
-    console.log('1',anno);
-    window.admin.annotate(anno);
-  });
-    // Add admin helper UI if in admin mode
-/*
-if (window.utils.paramsToHash(document.location.search).admin === "true") {
-    window.admin.addAdminHelperUI();
-}*/
-
-=======
 
 window.initFunctions.setupOpenSeadragonViewer(beehive_poster);
 if (window.utils.paramsToHash(document.location.search).admin === "true") {
@@ -84,7 +68,6 @@ document.getElementById('map-annotate-button').addEventListener('click', functio
 // Add admin helper UI if in admin mode
 
 // Initialize OpenSeadragon viewer
->>>>>>> Stashed changes
 
 // Add controls to the viewer
 window.initFunctions.addControls();

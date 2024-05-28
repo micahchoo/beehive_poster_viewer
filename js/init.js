@@ -4,14 +4,6 @@ import * as Story from './story.js';
 import * as UI from './ui.js';
 let beehive_poster;
 let beehive_lang;
-<<<<<<< Updated upstream
-let viewer;
-let anno;
-
-// init.js
-
-(function(viewer, anno) {
-=======
 var anno =null;
 // init.js
 
@@ -24,10 +16,9 @@ var anno =null;
         return { beehive_poster, beehive_lang };
     }
 
->>>>>>> Stashed changes
     function setupOpenSeadragonViewer() {
         var dziFile = "./tiles/" + beehive_poster + "/" + beehive_poster + ".dzi";
-        viewer = OpenSeadragon({            
+        window.openSeadragonViewer = OpenSeadragon({
             id: "openseadragon",
             showNavigator: false,
             autoHideControls: false,
@@ -41,26 +32,6 @@ var anno =null;
                 pinchRotate: true
               },
         });
-        anno = OpenSeadragon.Annotorious(viewer, {
-            widgets: [
-              { widget: 'COMMENT', editor: true },
-              { widget: 'TAG', vocabulary: ['important', 'review', 'completed'] }
-            ],
-          });
-          anno.setDrawingTool('polygon'); // Enable polygon drawing tool
-          return { viewer, anno };
-
-    }
-
-
-
-    function setPosterAndLang() {
-        var h = window.utils.paramsToHash(window.location.search);
-        beehive_poster = h.poster;
-        beehive_lang = (typeof h.lang === "undefined") ? 'en' : h.lang;
-
-        return { beehive_poster, beehive_lang };
-
     }
 
     function setupAnnotorious() {
@@ -70,25 +41,47 @@ var anno =null;
               { widget: 'COMMENT', 
               editor: true 
                 },
-                { widget: 'COMMENT', 
-                label: 'label',
-                textarea.placeholder: 'placeholder',
-                editor: true,
-                  },  
-              { widget: 'TAG', 
-              vocabulary: [ 
-                { label: 'Place', uri: 'http://www.example.com/ontology/place' },
-                { label: 'Person', uri: 'http://www.example.com/ontology/person' }, 
-                { label: 'Event', uri: 'http://www.example.com/ontology/event' }
-              ],
-            }
+                {
+                    widget: 'HTML',
+                    field: 'html',
+                    label: 'HTML'
+                  },
             ],
           });
-          console.log
+          anno.addWidget('HTML', HTMLWidget);          
           anno.setDrawingTool('rect'); // Enable polygon drawing tool
           console.log('sa',anno);
           return (anno);
     }
+
+        // Custom HTML widget
+    class HTMLWidget {
+        constructor(args) {
+        this.element = document.createElement('div');
+        this.element.innerHTML = `
+            <label>${args.label}</label>
+            <textarea class="html-input"></textarea>
+        `;
+        }
+    
+        // Method to get the value from the widget
+        getValue() {
+        const textarea = this.element.querySelector('.html-input');
+        return textarea.value;
+        }
+    
+        // Method to set the value to the widget
+        setValue(value) {
+        const textarea = this.element.querySelector('.html-input');
+        textarea.value = value;
+        }
+    
+        // Method to get the DOM element
+        getElement() {
+        return this.element;
+        }
+    }
+  
 
     function addControls() {
         var controls = $("#overlayControls");
@@ -205,7 +198,7 @@ var anno =null;
                 parseFloat(params.y),
                 parseFloat(params.w),
                 parseFloat(params.h));
-            viewer.viewport.fitBounds(rect);
+            openSeadragonViewer.viewport.fitBounds(rect);
         } else if ("s" in params) {
             var destLi = $("#storyList li").filter(function(i, li) {
                 var story = $(li).find(".story").data("beehive-story");
@@ -229,9 +222,9 @@ var anno =null;
             "&h=" + encodeURIComponent(bounds.height.toFixed(5))
         }
       
-        function regionString(bounds) {
+    function regionString(bounds) {
         return `<story>/n<label></label>/n<region/nx="${bounds.x.toFixed(5)}"/ny="${bounds.y.toFixed(5)}"/nwidth="${bounds.width.toFixed(5)}"/nheight="${bounds.height.toFixed(5)}"/n/>/n<html></html>/n</story>`;
-        }
+    }
       /* Take an OpenSeadragon.Rect, add it into query params for a link.
            We keep 5 decimal places which is enough for an image 100,000 pixels
            high/wide, which should be plenty (coordinate are relative 0 -> 1 )*/
@@ -257,7 +250,7 @@ var anno =null;
         var ajaxLoad = loadPosterData();
         // And go to first story, or specified bounds -- but only after OSD finishes
         // loading AND our ajax loadPosterData is done!
-        viewer.addHandler('open', function (event) {
+        openSeadragonViewer.addHandler('open', function (event) {
           // always: poster.xml load may not have worked, we still
           // wanna set our view of the tiles.
           ajaxLoad.always(function() {
@@ -268,7 +261,7 @@ var anno =null;
       
         $("#navControls").on("click", "#makePermaLink", function(event) {
           event.preventDefault();
-          var bounds = viewer.viewport.getBounds();
+          var bounds = openSeadragonViewer.viewport.getBounds();
       
       
           $("#linkModalUrlField").val( urlWithNewBounds(bounds) );
@@ -288,4 +281,4 @@ var anno =null;
         loadPosterData,
         gotoInitialView
     };
-})(window.viewer, window.anno);
+})();
