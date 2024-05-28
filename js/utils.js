@@ -1,5 +1,7 @@
 //utils.js
-(function() {
+import * as initFunctions from './init.js';
+let viewer;
+(function(viewer) {
     function paramsToHash(querystring) {
         querystring = querystring.substring(querystring.indexOf('?') + 1).split('&');
         var params = {}, pair, d = decodeURIComponent;
@@ -12,7 +14,7 @@
 
 
     function withSlowOSDAnimation(f) {
-        var viewport = openSeadragonViewer.viewport;
+        var viewport = viewer.viewport;
         var oldValues = {
             centerSpringXAnimationTime: viewport.centerSpringX.animationTime,
             centerSpringYAnimationTime: viewport.centerSpringY.animationTime,
@@ -29,37 +31,37 @@
 
     function adjustRectForPanel(rect) {
         var newRect = jQuery.extend(true, {}, rect);
-        var reservedPortion = panelReservedPortion();
+        var reservedPortion = panelReservedPortion(viewer);
         var newWidth = rect.width / (1 - reservedPortion);
         newRect.x = rect.x - (newWidth - rect.width);
         newRect.width = newWidth;
         return newRect;
     }
 
-    function subtractPanelFromViewport(viewportRect) {
-        var reservedPortion = panelReservedPortion();
+    function subtractPanelFromViewport(viewportRect, viewer) {
+        var reservedPortion = panelReservedPortion(viewer);
         var newRect = jQuery.extend(true, {}, viewportRect);
         newRect.width = viewportRect.width * (1 - reservedPortion);
         newRect.x = newRect.x + (viewportRect.width - newRect.width);
         return newRect;
     }
 
-    function panelReservedPortion() {
+    function panelReservedPortion(viewer) {
         var overlay = $("#overlayControls");
-        var containerWidth = openSeadragonViewer.viewport.getContainerSize().x;
+        var containerWidth = viewer.viewport.getContainerSize().x;
         var panelWidth = overlay.width() +
             parseInt(overlay.css("margin-left")) +
             parseInt(overlay.css("margin-right"));
         return (panelWidth / containerWidth);
     }
 
-    function calcProximateScene(rect) {
+    function calcProximateScene(rect, viewer) {
         var maxCoverage = 0;
         var maxLi = null;
         $("#storyList > li").each(function(i, li) {
             var rectArea = rect.width * rect.height;
             var story = $(li).find(".story").data("beehive-story");
-            var storyRect = new OpenSeadragon.Rect(parseFloat(story.region.x),
+            var storyRect = new viewer.Rect(parseFloat(story.region.x),
                 parseFloat(story.region.y),
                 parseFloat(story.region.width),
                 parseFloat(story.region.height));
@@ -103,4 +105,4 @@
         calcProximateScene,
         rectIntersect
     };
-})();
+})(window.viewer);

@@ -54,11 +54,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script type="text/javascript" src="./js/jquery.easyModal.min.js"></script>
     <script type="module" src="./js/utils.js"></script>
+    <script type="module" src="./js/main.js"></script>
+    <script type="module" src="./js/admin.js"></script>
+
     <script type="module" src="./js/init.js"></script>
     <script type="module" src="./js/ui.js"></script>
-    <script type="module" src="./js/admin.js"></script>
     <script type="module" src="./js/story.js"></script>
-    <script type="module" src="./js/main.js"></script>
   </head>
   <body>
 
@@ -69,9 +70,7 @@
       <!-- button to toggle mode to add annotations live. We don't
            really use except for testing/dev. Starts out hidden, we
           show it if admin interface.  -->
-      <a id="map-annotate-button" onclick="admin.annotate();  return false;"
-      style="display:none;"
-      href="#">DEFINE REGION</a>
+      <a id="map-annotate-button" href="#">DEFINE REGION</a>
         
   </div>
 

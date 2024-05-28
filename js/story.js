@@ -4,7 +4,7 @@ import * as utils from './utils.js';
 import * as initFunctions from './init.js';
 let sceneTransitionMode;
 (function() {
-  function loadStory(li, move = true) {
+  function loadStory(viewer, li, move = true) {
       li = $(li);
       var story = li.find(".story").data("beehive-story");
       if (typeof story === "undefined") return;
@@ -24,14 +24,14 @@ let sceneTransitionMode;
           if (move) {
               sceneTransitionMode = true;
               window.utils.withSlowOSDAnimation(function() {
-                  rect = window.utils.adjustRectForPanel(rect);
-                  openSeadragonViewer.viewport.fitBounds(rect);
+                  rect = window.utils.adjustRectForPanel(rect, viewer);
+                  viewer.viewport.fitBounds(rect);
               });
           }
       });
   }
 
-  function closeStoryList(func) {
+  function closeStoryList(func,viewer) {
       if ($("#slideContainerOverlay").is(":visible")) {
           $("#slideContainerOverlay").fadeOut('slow');
       }

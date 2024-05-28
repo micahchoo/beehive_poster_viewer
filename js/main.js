@@ -10,6 +10,8 @@ import * as admin from './admin.js';
 // Initialize global variables
 var beehive_poster;
 var beehive_lang;
+var viewer;
+var anno;
 const result = window.initFunctions.setPosterAndLang(beehive_poster, beehive_lang); // Set poster and language from query params
 beehive_poster = result.beehive_poster;
 beehive_lang = result.beehive_lang;
@@ -21,6 +23,9 @@ var i18n_data = {};
    // Hacky global mode to avoid moving to a new scene and then immediately calculating
    // a DIFFERENT scene.
 var sceneTransitionMode = false;
+
+
+
 // Function to load JSON files
 async function loadI18nData(beehive_lang) {
     try {
@@ -42,14 +47,24 @@ jQuery(document).ready(function($) {
         window.UI.storyListHeightLimit();
     });
   });
+
+
+
 jQuery( document ).ready(function( $ ) {
-window.initFunctions.setupOpenSeadragonViewer(beehive_poster);
-// Add admin helper UI if in admin mode
+var resulta = window.initFunctions.setupOpenSeadragonViewer(beehive_poster, viewer, anno);
+viewer = resulta.viewer;
+anno = resulta.anno;
+document.getElementById('map-annotate-button').addEventListener('click', function(event) {
+    event.preventDefault(); // Prevent the default link behavior
+    console.log('1',anno);
+    window.admin.annotate(anno);
+  });
+    // Add admin helper UI if in admin mode
 /*
 if (window.utils.paramsToHash(document.location.search).admin === "true") {
     window.admin.addAdminHelperUI();
 }*/
-// Initialize OpenSeadragon viewer
+
 
 // Add controls to the viewer
 window.initFunctions.addControls();
@@ -60,7 +75,7 @@ window.initFunctions.loadPosterData(beehive_poster, beehive_lang);
 // Go to the initial view
 window.initFunctions.gotoInitialView();
 
-window.initFunctions.addPermalinkFunc();
+window.initFunctions.addPermalinkFunc(viewer);
 
 // Adjust story list height limit
 window.UI.storyListHeightLimit();
@@ -68,7 +83,7 @@ window.UI.storyListHeightLimit();
 window.UI.applyI18nValues(beehive_lang);
 
 // Add event listeners for OpenSeadragon viewer
-openSeadragonViewer.addHandler('animation-finish', function(target, info) {
+viewer.addHandler('animation-finish', function(target, info) {
     // If the animation finished after we explicitly loaded a scene,
     // do NOT re-calculate and load a DIFFERENT scene!
     if (sceneTransitionMode) {
@@ -77,14 +92,14 @@ openSeadragonViewer.addHandler('animation-finish', function(target, info) {
     }
 
     var bounds = target.eventSource.viewport.getBounds();
-    var bestLi = window.utils.calcProximateScene(window.utils.subtractPanelFromViewport(bounds));
+    var bestLi = utils.calcProximateScene(utils.subtractPanelFromViewport(bounds, viewer), viewer);
 
     if (bestLi == null) {
         // Unload any story, but leave 'next' button.
         $(".controlsText").hide();
     } else if ($(".controlsText").data("beehive-story-li") == undefined || bestLi != $(".controlsText").data("beehive-story-li").get(0)) {
         // Load it unless it's already loaded.
-        window.Story.loadStory(bestLi, false);
+        window.Story.loadStory(viewer, bestLi, false);
     }
 });
 

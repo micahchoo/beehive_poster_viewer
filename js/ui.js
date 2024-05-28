@@ -13,7 +13,6 @@ let i18n_data = {
 async function loadI18nData(lang) {
     try {
         const response = await fetch(`./i18n/${lang}.json`);
-        console.log(i18n_data.en)
 
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);

@@ -4,32 +4,45 @@ import * as Story from './story.js';
 import * as UI from './ui.js';
 let beehive_poster;
 let beehive_lang;
+let viewer;
+let anno;
 
 // init.js
 
-(function() {
-
-    function setPosterAndLang() {
-        var h = window.utils.paramsToHash(window.location.search);
-        beehive_poster = h.poster;
-        beehive_lang = (typeof h.lang === "undefined") ? 'en' : h.lang;
-        console.log(beehive_poster);
-        return { beehive_poster, beehive_lang };
-    }
-
+(function(viewer, anno) {
     function setupOpenSeadragonViewer() {
         var dziFile = "./tiles/" + beehive_poster + "/" + beehive_poster + ".dzi";
-        window.openSeadragonViewer = OpenSeadragon({
+        viewer = OpenSeadragon({            
             id: "openseadragon",
             showNavigator: false,
             autoHideControls: false,
-            prefixUrl: "./openseadragon-bin-2.3.0/images/",
+            prefixUrl: "./openseadragon-bin-4.1.0/images/",
             tileSources: dziFile,
             zoomInButton: 'zoomInBtn',
             zoomOutButton: 'zoomOutBtn',
             homeButton: 'fullPosterBtn',
             minZoomImageRatio: 0.7
         });
+        anno = OpenSeadragon.Annotorious(viewer, {
+            widgets: [
+              { widget: 'COMMENT', editor: true },
+              { widget: 'TAG', vocabulary: ['important', 'review', 'completed'] }
+            ],
+          });
+          anno.setDrawingTool('polygon'); // Enable polygon drawing tool
+          return { viewer, anno };
+
+    }
+
+
+
+    function setPosterAndLang() {
+        var h = window.utils.paramsToHash(window.location.search);
+        beehive_poster = h.poster;
+        beehive_lang = (typeof h.lang === "undefined") ? 'en' : h.lang;
+
+        return { beehive_poster, beehive_lang };
+
     }
 
     function addControls() {
@@ -147,7 +160,7 @@ let beehive_lang;
                 parseFloat(params.y),
                 parseFloat(params.w),
                 parseFloat(params.h));
-            openSeadragonViewer.viewport.fitBounds(rect);
+            viewer.viewport.fitBounds(rect);
         } else if ("s" in params) {
             var destLi = $("#storyList li").filter(function(i, li) {
                 var story = $(li).find(".story").data("beehive-story");
@@ -171,9 +184,9 @@ let beehive_lang;
             "&h=" + encodeURIComponent(bounds.height.toFixed(5))
         }
       
-    function regionString(bounds) {
+        function regionString(bounds) {
         return `<story>/n<label></label>/n<region/nx="${bounds.x.toFixed(5)}"/ny="${bounds.y.toFixed(5)}"/nwidth="${bounds.width.toFixed(5)}"/nheight="${bounds.height.toFixed(5)}"/n/>/n<html></html>/n</story>`;
-    }
+        }
       /* Take an OpenSeadragon.Rect, add it into query params for a link.
            We keep 5 decimal places which is enough for an image 100,000 pixels
            high/wide, which should be plenty (coordinate are relative 0 -> 1 )*/
@@ -199,7 +212,7 @@ let beehive_lang;
         var ajaxLoad = loadPosterData();
         // And go to first story, or specified bounds -- but only after OSD finishes
         // loading AND our ajax loadPosterData is done!
-        openSeadragonViewer.addHandler('open', function (event) {
+        viewer.addHandler('open', function (event) {
           // always: poster.xml load may not have worked, we still
           // wanna set our view of the tiles.
           ajaxLoad.always(function() {
@@ -210,7 +223,7 @@ let beehive_lang;
       
         $("#navControls").on("click", "#makePermaLink", function(event) {
           event.preventDefault();
-          var bounds = openSeadragonViewer.viewport.getBounds();
+          var bounds = viewer.viewport.getBounds();
       
       
           $("#linkModalUrlField").val( urlWithNewBounds(bounds) );
@@ -229,4 +242,4 @@ let beehive_lang;
         loadPosterData,
         gotoInitialView
     };
-})();
+})(window.viewer, window.anno);
