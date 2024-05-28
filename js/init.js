@@ -4,12 +4,27 @@ import * as Story from './story.js';
 import * as UI from './ui.js';
 let beehive_poster;
 let beehive_lang;
+<<<<<<< Updated upstream
 let viewer;
 let anno;
 
 // init.js
 
 (function(viewer, anno) {
+=======
+var anno =null;
+// init.js
+
+(function() {
+
+    function setPosterAndLang() {
+        var h = window.utils.paramsToHash(window.location.search);
+        beehive_poster = h.poster;
+        beehive_lang = (typeof h.lang === "undefined") ? 'en' : h.lang;
+        return { beehive_poster, beehive_lang };
+    }
+
+>>>>>>> Stashed changes
     function setupOpenSeadragonViewer() {
         var dziFile = "./tiles/" + beehive_poster + "/" + beehive_poster + ".dzi";
         viewer = OpenSeadragon({            
@@ -21,7 +36,10 @@ let anno;
             zoomInButton: 'zoomInBtn',
             zoomOutButton: 'zoomOutBtn',
             homeButton: 'fullPosterBtn',
-            minZoomImageRatio: 0.7
+            minZoomImageRatio: 0.7,
+            gestureSettingsTouch: {
+                pinchRotate: true
+              },
         });
         anno = OpenSeadragon.Annotorious(viewer, {
             widgets: [
@@ -43,6 +61,33 @@ let anno;
 
         return { beehive_poster, beehive_lang };
 
+    }
+
+    function setupAnnotorious() {
+        let anno = OpenSeadragon.Annotorious(openSeadragonViewer, {
+            locale:'auto',
+            widgets: [
+              { widget: 'COMMENT', 
+              editor: true 
+                },
+                { widget: 'COMMENT', 
+                label: 'label',
+                textarea.placeholder: 'placeholder',
+                editor: true,
+                  },  
+              { widget: 'TAG', 
+              vocabulary: [ 
+                { label: 'Place', uri: 'http://www.example.com/ontology/place' },
+                { label: 'Person', uri: 'http://www.example.com/ontology/person' }, 
+                { label: 'Event', uri: 'http://www.example.com/ontology/event' }
+              ],
+            }
+            ],
+          });
+          console.log
+          anno.setDrawingTool('rect'); // Enable polygon drawing tool
+          console.log('sa',anno);
+          return (anno);
     }
 
     function addControls() {
@@ -238,6 +283,7 @@ let anno;
         setPosterAndLang,
         addPermalinkFunc,
         setupOpenSeadragonViewer,
+        setupAnnotorious,
         addControls,
         loadPosterData,
         gotoInitialView

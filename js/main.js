@@ -1,10 +1,11 @@
 //main.js
 
 import * as utils from './utils.js';
+import * as admin from './admin.js';
+
 import * as initFunctions from './init.js';
 import * as UI from './ui.js';
 import * as Story from './story.js';
-import * as admin from './admin.js';
 // Importing functions from different modules
 
 // Initialize global variables
@@ -38,6 +39,7 @@ async function loadI18nData(beehive_lang) {
         console.error("Unable to fetch i18n data:", error);
     }
 }
+
 // Add event listeners for window resize
 jQuery(document).ready(function($) {
 
@@ -51,6 +53,7 @@ jQuery(document).ready(function($) {
 
 
 jQuery( document ).ready(function( $ ) {
+<<<<<<< Updated upstream
 var resulta = window.initFunctions.setupOpenSeadragonViewer(beehive_poster, viewer, anno);
 viewer = resulta.viewer;
 anno = resulta.anno;
@@ -65,6 +68,23 @@ if (window.utils.paramsToHash(document.location.search).admin === "true") {
     window.admin.addAdminHelperUI();
 }*/
 
+=======
+
+window.initFunctions.setupOpenSeadragonViewer(beehive_poster);
+if (window.utils.paramsToHash(document.location.search).admin === "true") {
+    var anno= null;
+    console.log('annomain1', anno);
+    anno = window.admin.addAdminHelperUI();
+document.getElementById('map-annotate-button').addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent the default link behavior
+        console.log('annomain2',anno);
+        window.admin.annotate(anno);
+      });
+}
+// Add admin helper UI if in admin mode
+
+// Initialize OpenSeadragon viewer
+>>>>>>> Stashed changes
 
 // Add controls to the viewer
 window.initFunctions.addControls();
