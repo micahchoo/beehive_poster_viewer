@@ -55,15 +55,11 @@ Each story tag defines a scene: a title for that scene (listed in the scene list
 
 The tricky part is finding the right x/y/height/width for the part of the poster you want to focus on.  There is a feature built into the posterViewer to help you do this. 
 
-Add `&admin=true` to the end of a posterViewer URL for a certain poster. Now you will get a "DEFINE REGION" button in the upper right corner of the poster. 
+Add `&admin=true` to the end of a posterViewer URL for a certain poster. Now you can drag a selection on the image while pressing shift. This will open up the annotorious editor, where you can add some placeholder text. After adding the annotation here, you will see a popup with a snippet that you can edit and add to the narrative xml file. This snippet contains the information about the region where the story lies
 
-Zoom and move to somewhere generally containing the area and zoom level of the poster you want to define as a scene region. You may want to hide the narrative box to have a bigger work area.  
+### Drawing tool
+in Admin mode, you also get a button that lets you cycle between using a rectangle or a polygon as an annotation selector.
 
-Then click the "DEFINE REGION" button, and click and drag to define a rectangular region. You don't need to worry about the exact zoom level you are at, beyond having a zoom level that lets you see and define the region you want -- when displayed, the viewer will zoom to wherever it needs to show all of the exact box you define. 
-
-When you let up the mouse button, you'll get a little box saying "add a comment" with a 'save' button. It actually doesn't matter what you enter as a comment, it will be ignored, but do press the 'save' button -- now move your mouse back inside the region you defined, and you'll see a box pop up with a `<region>` tag in it, that you can copy and paste into the narrative XML definition file, to link to that rectangular region you defined. 
-
-This 'admin' interface is a bit klunky, but it should work to let you define the regions you want. If at first you didn't get quite the right one, just go try again and copy the new `<region>` into the appropriate scene in the narrative xml file again. 
 
 ### The narrative text  is HTML
 

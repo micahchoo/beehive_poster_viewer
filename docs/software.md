@@ -18,13 +18,11 @@ The real hard work of the poster viewer is done by the [OpenSeadragon](https://g
 
 We include a [copy of OpenSeadragon locally](../openseadragon-bin-1.1.1) in the git repo and on the web server. At time of writing, that was OpenSeadragon 1.1.1. To upgrade to a newer version of OpenSeadragon, you'd just add the new version to the git repo, and change the link in the viewer.html file to point to the new version -- we intentionally use version numbers in the directory we put OpenSeadragon in, so we can tell browsers to cache it forever, but if we upgrade OpenSeadragon the new version will be at a new URL. 
 
-### Annotorious
+### Annotorious-OSD plugin
 
-[Annotorious](http://annotorious.github.io/) is another Javascript library, that is compatible with OpenSeadragon, for adding annotations to images. 
+[Annotorious](http://annotorious.github.io/) is another Javascript library, that has a plugin for OpenSeadragon, for adding annotations to images. 
 
-Currently, we only use Annotorious in our admin interface for defining region boundaries that will be cut and pasted into the narrative XML file. We may use it in the future to support additional features for end users. 
-
-Our viewer.html file links out to annotorious hosted externally. For some reason, when I tried copying annotorious into our local repo/directory, I had trouble getting it to work. Since at the moment it's just an admin interface, i didn't spend any more time on it, and just left it this way. 
+Our viewer.html file links out to annotorious hosted externally.
 
 ### easyModal
 
@@ -32,8 +30,8 @@ We use [easyModal.js](http://flaviusmatis.github.io/easyModal.js/) for displayin
 
 ## i18n language localization
 
-Most of the language-specific text (English, Spanish, etc) for a given poster is in the narratie XML files. But there are a few parts of the general UI that need textual words. 
+Most of the language-specific text (English, Spanish, etc) for a given poster is in the narrative XML files. But there are a few parts of the general UI that need textual words. 
 
-We use a fairly simple homegrown system for localizing these depending on the `&lang=` URL parameter. At the top of the viewer.js file, you'll find some JS hash's that include the proper language-specific text for UI elements, and some simple code to put them on the page in the right places. 
+We use a fairly simple homegrown system for localizing these depending on the `&lang=` URL parameter. In the js folder, under i18n, there are json files corresponding to language - that include the proper language-specific text for UI elements, you can choose ui elements by their ID and add translations for them. 
 
 Not all of the UI has been properly localized using this system yet, and this area is really still not entirely finished, just a start. 
