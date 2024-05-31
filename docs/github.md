@@ -1,26 +1,37 @@
-All the source code for the online viewer are in a git repository, hosted on github at:
-https://github.com/jrochkind/beehive_poster_viewer
+## Using GitHub for Beehive Poster Viewer
 
-This includes HTML, JS, CSS, and scene definitions in XML. It does NOT include the tile images in the `./tiles` directory -- those are too large to be kept in the repo, and are just manually uploaded to the ./tiles directory on the web server. 
+This article provides a step-by-step guide on how to use GitHub for managing and deploying the Beehive Poster Viewer project. The repository for this project is publicly available and open-source, hosted on GitHub at [https://github.com/micahchoo/beehive_poster_viewer](https://github.com/micahchoo/beehive_poster_viewer). The repository includes HTML, JavaScript, CSS, and scene definitions in XML, a low-quality sample image with dzi tiles is also provided.
 
-This repo is viewable by the public at large; the code is open source.
+### 1. Forking the Repository
 
-A git repository, among other things, keeps track of all changes made to the files, easily allows you see what changes were made when, undo changes, etc.
+Forking a repository allows you to create your own copy of the repository under your GitHub account. This is useful for making changes without affecting the original project.
 
-So, it would be best to make changes *only through git*, not edit them directly on the web server. There are a variety of ways to use git, but the easiest for the non-techies might be using the built-in web editor on github.com -- just go to the file you want, and click 'edit', then 'save' (entering a short summary of the nature/purposes of your changes in the text box given for that is advisable)
+#### Steps to Fork a Repository:
+1. **Navigate to the Repository**: Go to [https://github.com/micahchoo/beehive_poster_viewer](https://github.com/micahchoo/beehive_poster_viewer).
+2. **Fork the Repository**: Click on the "Fork" button at the top-right corner of the page. This will create a copy of the repository under your GitHub account.
+3. **Clone the Forked Repository**: Clone the repository to your local machine using the following command:
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/beehive_poster_viewer.git
+   ```
+   Replace `YOUR_USERNAME` with your GitHub username.
 
-To see the 'edit' button and be able to edit, you'll have to make an account on github.
+### 2. Using GitHub Desktop to Send Commits
 
+GitHub Desktop is a user-friendly application that simplifies the process of managing Git repositories. It allows you to commit changes, create branches, and push updates to GitHub.
 
-## be careful; and more advanced use: branches
+#### Steps to Use GitHub Desktop:
+1. **Download and Install GitHub Desktop**: Download GitHub Desktop from [desktop.github.com](https://desktop.github.com/) and install it.
+2. **Clone the Repository**: Open GitHub Desktop and clone your forked repository by selecting "File" > "Clone Repository" and choosing your forked repository.
+3. **Make Changes**: Open the repository in your preferred code editor and make the necessary changes.
+4. **Commit Changes**: In GitHub Desktop, you will see the changes listed. Add a summary of the changes and click "Commit to main".
+5. **Push Changes**: Click "Push origin" to push your commits to GitHub.
 
-The danger of simply making changes in github and then pulling them, is you don't see for sure if they've worked (or if they may break everything) until you've made your changes live. 
+### 3. Using GitHub Pages to Deploy
 
-So be careful!
+GitHub Pages allows you to host static websites directly from a GitHub repository. The Beehive Poster Viewer repository includes a `static.yml` file under `.github/actions` that can be used to deploy the project as a webpage.
 
-There are features in git that would allow you to make your changes on a separate 'branch', and only later after you've confirmed they work, merge them into the 'master' branch. How woud you test your branch to see if it worked? You could check out another version of the posterViewer somewhere else on the web server (say posterViewer_test), and examine it there. 
-
-Full instructions on how to do that we can't get into now -- and we'd probably have to figure out a scheme for making sure the posterViewer_test area can find the tile images properly (if you are a techie reading this, symlinks might be worth exploring). So this is really just an idea for possible future exploration for now. 
-
-## github pages
-Under .github/actions there is a static.yml which could be used to serve the repo as a webpage using github pages - remember to add the ![query paramenters](https://web.archive.org/web/20240320115535/https://static.semrush.com/blog/uploads/media/13/c0/13c06b986a5d05abb45c36bf345ea964/original.png) to the URL
+#### Steps to Deploy Using GitHub Pages:
+1. **Enable GitHub Pages**: Go to the settings of your forked repository on GitHub. Under the "Pages" section, select the branch you want to deploy from (usually `main`) and click "Save".
+2. **Configure GitHub Actions**: Ensure that the `static.yml` file is correctly configured to build and deploy your site. This file is located at `.github/actions/static.yml`.
+3. **Add Query Parameters**: Remember to add the necessary query parameters to the URL as specified in the original instructions.
+4. **Deploy**: Once the configuration is complete, GitHub Actions will automatically build and deploy your site. You can access your site at `https://YOUR_USERNAME.github.io/beehive_poster_viewer`.

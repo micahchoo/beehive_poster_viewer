@@ -23,3 +23,6 @@
 8. Test and improve internationalisation
 
 9. Explore widget making for the annotorious editor
+
+10. Use the w3c standard annotator as the main method of storing and creating annotations 
+    - translator to and from the current xml file?
