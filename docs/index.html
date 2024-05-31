@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Docs for Beehive Poster Viewer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    #file-list {
+      margin-bottom: 20px;
+    }
+    #content {
+        padding: 18px;
+        font-family: beehiveserif;
+        margin-top:6px;
+        margin-bottom:6px;
+        width: 80%;
+        border-top: 2px solid black;
+        border-right: 2px solid black;
+        border-bottom: 2px solid black;
+        border-left: 2px solid black;
+        -webkit-border-image: url('../images/single-frame.gif') 5 5 5 5 repeat;
+        border-image: url('../images/single-frame.gif') 5 5 5 5 repeat;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Docs for customizing the repository</h1>
+
+<div id="file-list">
+    <label for="markdown-files">Select a markdown file:</label>
+    <select id="markdown-files">
+      <option value="facebook_og.md">How to use facebook Opengraph</option>
+      <option value="github.md">How to use github to manage this viewer</option>
+      <option value="narrative.md">How to add/edit the narrative chapter/stories for the viewer</option>
+      <option value="software.md">How is the repository structured</option>
+      <option value="tiles.md">How to make deep zoomable images for the viewer</option>
+    </select>
+    <br>
+    <button id="load-button">Read the markdown file</button>
+  </div>
+  
+  <div id="content">
+    <p>Select a markdown file to view its content.</p>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+    document.getElementById('load-button').addEventListener('click', function() {
+      const selectedFile = document.getElementById('markdown-files').value;
+      fetch(selectedFile)
+        .then(response => response.text())
+        .then(markdown => {
+          const htmlContent = marked.parse(markdown);
+          document.getElementById('content').innerHTML = htmlContent;
+        })
+        .catch(error => {
+          console.error('Error loading markdown file:', error);
+          document.getElementById('content').innerHTML = '<p>Error loading markdown file.</p>';
+        });
+    });
+  </script>
+  
+  </body>
+  </html>

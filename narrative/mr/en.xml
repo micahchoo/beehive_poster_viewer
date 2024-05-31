@@ -25,7 +25,12 @@
         draws parallels between colonial history and modern-day capitalism. Outsiders who have no connection with the land have drawn this map, with motives of extraction and profit.</p>
       </html>
     </story>
-
+        <story>
+            <label>ants</label>
+            <region x="0.13504183292388916" y="0.10926243066787719" width="0.22372157573699952" height="0.18947976827621463" />
+            <html>ants</html>
+        </story>
+        
     <story>
       <label>The Land Bridge</label>
       <region

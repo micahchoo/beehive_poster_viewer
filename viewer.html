@@ -50,13 +50,10 @@
 
 
     <link href="./css/viewer.css" rel="stylesheet" type="text/css">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-
     <script src="./openseadragon-bin-4.1.0/openseadragon.min.js"></script>
-
     <script type="text/javascript" src="./js/jquery.easyModal.min.js"></script>
-
     <script type="text/javascript" src="./js/viewer.js">
     </script>
   </head>
@@ -70,10 +67,11 @@
       <!-- button to toggle mode to add annotations live. We don't
            really use except for testing/dev. Starts out hidden, we
           show it if admin interface.  -->
-      <a id="map-annotate-button" onclick="annotate(); return false;"
-        style="display:none;"
-        href="http://annotorious.github.io/demos/openseadragon-preview.html#">DEFINE REGION</a>
-  </div>
+      <button id="map-annotate-button" style="display:none">press shift and drag to create an annotation</button>
+  <button id="toggleButton" style="display:none"></button>
+  <button id="docsButton"style="display:none"><a href ="./docs/">More instructions</a></button>
+</div>
+
 
   <!-- this is where the overlay controls live. It will be added by
     JS into the openseadragon canvas
@@ -148,8 +146,60 @@
     </h2>
     <div class="container" style="width: 100%">
       <input type="text" id="linkModalUrlField" readonly>
+      <button id="urlviewCopy" onclick="copyToClipboard('linkModalUrlField')"><i class="fa fa-copy"></i></button>
+        </div>
+    <h2 id="RegionHeader" data-i18n-key="region_form" class="hidden">
+      Add this to the narrative file to annotate the chosen Region
+    </h2>
+    <div class="container hidden" id="RegionContainer" style="width: 100%">
+      <input type="text" id="regionField" readonly>
+      <button id="RegionCopy" onclick="copyToClipboard('regionField')"><i class="fa fa-copy"></i></button>
+        </div>
+  </div>
+
+
+
+  <div id="adminModal" class="adminModal" style="display:none">
+    <div class="modal-content">    
+      <span class="close">&times;</span>
+    <h2 data-i18n-key="admin_mode">Instructions for Adding Annotations</h2>
+      <ol>
+        <li>Press <strong>Shift</strong> and drag to create an annotation.</li>
+        <li>Open the inspect page console with the keyboard or by right-clicking and selecting "Inspect".</li>
+        <li>Once your annotation is created, you should see something in this format in the console:
+          <pre>
+  &lt;story&gt;
+    &lt;label class="subhead"&gt;The Colonizers' view&lt;/label&gt;
+    &lt;region x="0.00000" y="0.00000" width="0.33333" height="0.33333"/&gt;
+    &lt;html&gt;
+      &lt;p&gt;This poster folds to create a square with shutters that open to a larger image inside.&lt;/p&gt;
+      &lt;p&gt;&lt;img src="images/drawn-folding-MR.png" /&gt;&lt;/p&gt;
+    &lt;/html&gt;
+  &lt;/story&gt;
+          </pre>
+        </li>
+        <li>Copy that and paste it in the <code>./narrative/{poster_name}/{language}.xml</code> file.</li>
+      </ol>
     </div>
   </div>
+    
+  </div>
+  <div id="popup" class="popup" style="display: none;">
+    <h3>JSON Object</h3>
+    <textarea id="jsonTextArea" readonly></textarea><br>
+    <button class="copy-btn" onclick="copyToClipboard('jsonTextArea')">Copy JSON to Clipboard</button>
+    <div class="two-column-section">
+      <div class="column">
+    <h3>Editable HTML Content</h3>
+    <textarea id="htmlTextArea" oninput="updatePreview()"></textarea><br>
+    <button class="copy-btn" onclick="copyToClipboard('htmlTextArea')">Copy HTML to Clipboard</button>
+  </div>
+  <div class="column">
+    <h3>HTML Preview</h3>
+    <div id="htmlPreview" class="preview"></div>
+  </div>
+</div>
+</div>
 
   </body>
 </html>

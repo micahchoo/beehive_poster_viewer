@@ -8,7 +8,8 @@
 
 var beehive_poster;
 var beehive_lang;
-
+var anno=null;
+var currentTool;
 
 /* Internationalization (i18n) -- all little text from the UI are in two hashes,
    one english (en), one spanish (es). */
@@ -18,34 +19,7 @@ var i18n_data = {}
 // a DIFFERENT scene.
 var sceneTransitionMode = false;
 
-i18n_data.en = {
-  'next': 'Next',
-  'previous': 'Previous',
-  'scenes': 'Scenes',
-  'full_screen_instruction': 'For the best view, try full-screen display.',
-  'zoom_in': 'Zoom in',
-  'zoom_out': 'Zoom out',
-  'full_poster': 'Full poster',
-  'full_screen': 'Toggle full screen',
-  'share_link': 'Share link to the current view of the poster',
-  'minimize': 'Hide the guide',
-  'show_text_box': 'Show the guide'
-};
 
-i18n_data.es = {
-  'next': 'Siguiente',
-  'previous': 'Anterior',
-  'scenes': 'Escenas',
-  'full_screen_instruction': 'Para la mejor vista, prueba la pantalla completa.',
-  'zoom_in': 'Acercar',
-  'zoom_out': 'Alejar',
-  'full_poster': 'Cartel completo',
-  'full_screen': 'Pantalla completa',
-  'share_link':  'Compartir un enlace a la vista actual del cartel',
-  'minimzie': 'Ocultar la guía',
-  'show_text_box': 'Mostrar el guía'
-
-};
 
 // A span or other element with data-i18n-key="key"
 // will have it's text content replaced by the value
@@ -53,7 +27,7 @@ i18n_data.es = {
 // data-i18n-title-key will have 'title' attribute
 // replaced instead, for <a> mouseovers.
 
-function applyI18nValues(lang) {
+/* function applyI18nValues(lang) {
   $(document).find("[data-i18n-key]").each(function(i, el) {
     var key = el.attributes['data-i18n-key'].value;
     var value = i18n_data[lang][key];
@@ -69,7 +43,7 @@ function applyI18nValues(lang) {
       $(el).attr('title',  value);
     }
   });
-}
+}*/
 
 
 function paramsToHash(querystring) {
@@ -211,11 +185,13 @@ function withSlowOSDAnimation(f) {
 
 /* Take an OpenSeadragon.Rect, and make it bigger zo we can zoom
    to it leaving room for the control panel too */
+// This function adjusts a given rectangle to make room for the control panel
 function adjustRectForPanel(rect) {
   var newRect = jQuery.extend(true, {}, rect)
 
   var reservedPortion = panelReservedPortion();
 
+  // Increase the width of the rectangle to account for the reserved portion
   var newWidth = rect.width / (1 - reservedPortion);
   newRect.x = rect.x - (newWidth - rect.width);
   newRect.width = newWidth;
@@ -225,12 +201,15 @@ function adjustRectForPanel(rect) {
 
 // opposite of adjustRectForPanel, take a viewport rect,
 // and remove the area for legend panel
+// This function subtracts the area reserved for the control panel from the viewport rectangle
 function subtractPanelFromViewport(viewportRect) {
   var reservedPortion = panelReservedPortion();
 
   var newRect = jQuery.extend(true, {}, viewportRect);
 
+  // Reduce the width of the rectangle by the reserved portion
   newRect.width  = viewportRect.width * (1 - reservedPortion);
+  // Shift the rectangle to the right by the reserved portion
   newRect.x      = newRect.x + (viewportRect.width - newRect.width);
 
   return newRect;
@@ -238,13 +217,18 @@ function subtractPanelFromViewport(viewportRect) {
 
 
 
+// This function calculates the portion of the viewport that is reserved for the control panel
 function panelReservedPortion() {
+  // Get the overlay element that contains the control panel
   var overlay = $("#overlayControls");
+  // Get the width of the container that holds the OpenSeadragon viewer
   var containerWidth = openSeadragonViewer.viewport.getContainerSize().x;
+  // Calculate the width of the control panel, including margins
   var panelWidth = overlay.width() +
     parseInt(overlay.css("margin-left")) +
     parseInt(overlay.css("margin-right"));
 
+  // Return the ratio of the panel width to the container width
   return (panelWidth / containerWidth);
 }
 
@@ -263,7 +247,7 @@ function setupOpenSeadragonViewer() {
     //prefixUrl: "http://annotorious.github.io/js/openseadragon/images/",
     showNavigator: false,
     autoHideControls: false,
-    prefixUrl: "./openseadragon-bin-2.3.0/images/",
+    prefixUrl: "./openseadragon-bin-4.1.0/images/",
     tileSources: dziFile,
     // We tell OSD to use our own nav buttons, easier than
     // trying to customize OSD's
@@ -271,7 +255,10 @@ function setupOpenSeadragonViewer() {
     zoomOutButton: 'zoomOutBtn',
     homeButton: 'fullPosterBtn',
     //fullPageButton: 'fullPageBtn',
-    minZoomImageRatio: 0.7
+    minZoomImageRatio: 0.7,
+    gestureSettingsTouch: {
+      pinchRotate: true
+    },
   });
 }
 
@@ -411,6 +398,9 @@ function addPermalinkFunc() {
       "&w=" + encodeURIComponent(bounds.width.toFixed(5)) +
       "&h=" + encodeURIComponent(bounds.height.toFixed(5))
   }
+  function regionString(bounds) {
+    return `<story><label></label><region x="${bounds.x.toFixed(5)}"y="${bounds.y.toFixed(5)}"width="${bounds.width.toFixed(5)}"height="${bounds.height.toFixed(5)}"<html></html></story>`;
+}
 
 /* Take an OpenSeadragon.Rect, add it into query params for a link.
      We keep 5 decimal places which is enough for an image 100,000 pixels
@@ -433,7 +423,9 @@ function addPermalinkFunc() {
   $("#linkModal").easyModal({
       overlayOpacity: 0.65
   });
-
+  $("#adminModal").easyModal({
+    overlayOpacity: 0.65
+});
   /* load data from the narrative file */
   var ajaxLoad = loadPosterData();
   // And go to first story, or specified bounds -- but only after OSD finishes
@@ -453,16 +445,23 @@ function addPermalinkFunc() {
 
 
     $("#linkModalUrlField").val( urlWithNewBounds(bounds) );
+    $("#regionField").val(regionString(bounds));
     $("#linkModal").trigger('openModal');
   });
 
 }
 
+// This function takes a storyJson object and generates a URL fragment
+// based on the 'label' property of the object
+// If the 'label' property is empty or undefined, it returns undefined
 function storyToFragmentUrl(storyJson) {
   var label = storyJson.label;
   if ((typeof label === "undefined") || label.length === 0) {
     return;
   } else {
+    // It appends the 'label' value to the current URL as a fragment identifier
+    // e.g., if the current URL is https://example.com and label is 'scene1',
+    // the generated URL would be https://example.com#s=scene1
     return window.location.href.split('#')[0] + "#s=" + encodeURIComponent(label);
   }
 }
@@ -470,26 +469,28 @@ function storyToFragmentUrl(storyJson) {
 // We store the story data in XML becuase it's more convenient
 // to edit by hand for the sort of data we have (really!), but
 // json is easier to deal with in javascript, esp cross-browser.
+// This function converts an XML node representing a story into a JSON object
 function storyXmlToJson(storyXml) {
-  storyXml = $(storyXml);
+  storyXml = $(storyXml); // Wrap the XML node with jQuery for easier manipulation
   var json = {};
 
-  json.label        = storyXml.find("label").text();
+  // Extract the 'label' value from the XML node
+  json.label = storyXml.find("label").text();
 
-  // .html() on xml node doesn't work in safari, use XMLSerializer.
-  // If it's raw text with no elements, wrap in a single <p> for
-  // consistency.
-  var htmlElement   = storyXml.find("html").get(0);
-  var serialized    = new XMLSerializer().serializeToString(htmlElement);
+  // Extract the 'html' content from the XML node
+  // If the content is just plain text, wrap it in a <p> tag
+  var htmlElement = storyXml.find("html").get(0);
+  var serialized = new XMLSerializer().serializeToString(htmlElement);
   if (htmlElement.childNodes.length === 1 && htmlElement.childNodes[0].nodeType === 3) {
-    serialized = "<p>"+serialized+"</p>";
+    serialized = "<p>" + serialized + "</p>";
   }
-  json.html         = serialized;
+  json.html = serialized;
 
-  var regionXml     = storyXml.find("region")
-  json.region       = {};
-  json.region.x     = regionXml.attr("x");
-  json.region.y     = regionXml.attr("y");
+  // Extract the 'region' coordinates from the XML node
+  var regionXml = storyXml.find("region")
+  json.region = {};
+  json.region.x = regionXml.attr("x");
+  json.region.y = regionXml.attr("y");
   json.region.width = regionXml.attr("width");
   json.region.height = regionXml.attr("height");
 
@@ -576,34 +577,40 @@ function loadPosterData() {
   // Height limits on the story list we couldn't figure out
   // how to do with pure CSS, we'll use some JS that we run on
   // load and screen size change.
-  function storyListHeightLimit() {
-    // Need to make sure it's a container that makes it onto
-    // full screen mode.
-    var container = $("#openseadragon");
-    var panel     = $("#overlayControls")
+// Function to set height limits on the story list and story text area
+function storyListHeightLimit() {
+  // Select the container element for the OpenSeadragon viewer
+  var container = $("#openseadragon");
+  // Select the panel element that contains the overlay controls
+  var panel = $("#overlayControls");
 
-    var maxPanelHeight = container.height() -
-      panel.position().top -
-      parseInt(panel.css('margin-top')) -
-      20; // 20px bottom margin we want
+  // Calculate the maximum height for the panel
+  // This is the height of the container minus the top position of the panel,
+  // minus the top margin of the panel, minus an additional 20 pixels for bottom margin
+  var maxPanelHeight = container.height() -
+    panel.position().top -
+    parseInt(panel.css('margin-top')) -
+    20; // 20px bottom margin we want
 
-    panel.css("max-height", maxPanelHeight);
+  // Set the calculated maximum height to the panel
+  panel.css("max-height", maxPanelHeight);
 
-    // The story list and and the story text area take
-    // turns being on the screen once at a time, below
-    // the header area. They each need a max height
-    // such that they won't overflow the panel.
-    var storyListBottom =
-      $(".controls-story-list-expander").position().top +
-      $(".controls-story-list-expander").outerHeight(true);
-    // CSS max-heigh doesn't account for padding or borders, we need
-    // to subtract extra to account, we just do a healthy extra amt.
-    var maxLowerHeight = maxPanelHeight - storyListBottom - 24;
+  // Calculate the bottom position of the story list expander
+  var storyListBottom =
+    $(".controls-story-list-expander").position().top +
+    $(".controls-story-list-expander").outerHeight(true);
 
-    panel.find(".controls-story-list, .controlsText").each(function(i, section) {
-      $(section).css("max-height", maxLowerHeight);
-    });
-  }
+  // Calculate the maximum height for the lower sections (story list and story text area)
+  // This is the maximum panel height minus the bottom position of the story list expander,
+  // minus an additional 24 pixels to account for padding and borders
+  var maxLowerHeight = maxPanelHeight - storyListBottom - 24;
+
+  // Set the calculated maximum height to both the story list and the story text area
+  panel.find(".controls-story-list, .controlsText").each(function(i, section) {
+    $(section).css("max-height", maxLowerHeight);
+  });
+}
+
   jQuery(document).ready(function($) {
 
 
@@ -622,40 +629,225 @@ function loadPosterData() {
     $("<link/>", {
       rel: "stylesheet",
       type: "text/css",
-      href: "//annotorious.github.io/latest/annotorious.css"
+      href: "https://cdn.jsdelivr.net/npm/@recogito/annotorious-openseadragon@2.7.14/dist/annotorious.min.css"
     }).appendTo("head");
 
     $.ajax({
-      url: "//annotorious.github.io/latest/annotorious.min.js",
+      url: "https://cdn.jsdelivr.net/npm/@recogito/annotorious-openseadragon@2.7.14/dist/openseadragon-annotorious.min.js",
       dataType: "script",
       success: function() {
         // Important to add the plugin BEFORE we make the OpenSeadragon viewer
         // annotatable
-        addShowRegionPlugin();
-
-        anno.makeAnnotatable(openSeadragonViewer);
-
+        //addShowRegionPlugin();
+        anno = setupAnnotorious();
+        console.log(anno);
         $("#map-annotate-button").show();
+        $("#toggleButton").show();
+        $("#docsButton").show();
+
+        $("#navControls").on("click", "#map-annotate-button", function(event) {
+          event.preventDefault();
+          $("#adminModal").trigger('openModal');
+        });
+
+
+        // Optional: Close the modal when clicking outside of it
+        window.addEventListener('click', function(event) {
+          if (event.target === adminModal) {
+            hideAdminModal();
+          }
+        });
+
+        //annotate(anno);
+
+        //addShowRegionPlugin(anno);
+
       }
     });
-
   }
-  /* Used by actual on-screen annotorious make annotation stuff, which
-   we're not really using at present */
-function annotate() {
-  var button = document.getElementById('map-annotate-button');
-  button.style.color = '#777';
 
-  anno.activateSelector(function() {
-    // Reset button style
+  function setupAnnotorious() {
+    // Initialize Annotorious with OpenSeadragon viewer
+    anno = OpenSeadragon.Annotorious(openSeadragonViewer, {
+        locale: "en",
+        widgets: [ 
+          {widget: 'COMMENT', editable: 'MINE_ONLY', purposeSelector: true, typeSelector: true},
+          {widget: 'TAG', vocabulary: 'tags'},
+        ],
+    });
+    console.log(anno.locale);
+    // Set the drawing tool to rectangle
+    let currentTool = 'rect';
+    document.getElementById('toggleButton').innerText = `Drawing tool: ${currentTool}`;
+    anno.setDrawingTool(currentTool);
+    document.getElementById('toggleButton').addEventListener('click', toggleDrawingTool);
+    // Get the annotate button and set its initial color
+    var button = document.getElementById('map-annotate-button');
+    button.style.color = '#777';
+    // Array to store annotations
+    var annotation = [];
+
+    // Event listener for creating annotations
+    anno.on('createAnnotation', function(a) {
+        console.log('created', a);
+        annotation.push(a);
+
+        // Get the bounds of the annotation
+        const bounds = a.target.selector.value;
+        let x, y, width, height;
+
+        if (bounds.includes('pixel:')) {
+            // Handle rectangle annotation
+            const valuesString = bounds.split('pixel:')[1];
+            const valuesArray = valuesString.split(',').map(Number);
+            [x, y, width, height] = valuesArray;
+
+            // Convert pixel coordinates to normalized coordinates
+            const topLeft = openSeadragonViewer.viewport.imageToViewportCoordinates(x, y);
+            const bottomRight = openSeadragonViewer.viewport.imageToViewportCoordinates(x + width, y + height);
+
+            x = topLeft.x;
+            y = topLeft.y;
+            width = bottomRight.x - topLeft.x;
+            height = bottomRight.y - topLeft.y;
+
+        } else if (bounds.includes('<polygon')) {
+            // Handle polygon annotation
+            const parser = new DOMParser();
+            const svgDoc = parser.parseFromString(bounds, 'image/svg+xml');
+            const points = svgDoc.querySelector('polygon').getAttribute('points').split(' ').map(point => {
+                const [px, py] = point.split(',').map(Number);
+                return { x: px, y: py };
+            });
+
+            const xs = points.map(p => p.x);
+            const ys = points.map(p => p.y);
+            const xmin = Math.min(...xs);
+            const xmax = Math.max(...xs);
+            const ymin = Math.min(...ys);
+            const ymax = Math.max(...ys);
+
+            // Convert pixel coordinates to normalized coordinates
+            const topLeft = openSeadragonViewer.viewport.imageToViewportCoordinates(xmin, ymin);
+            const bottomRight = openSeadragonViewer.viewport.imageToViewportCoordinates(xmax, ymax);
+
+            x = topLeft.x;
+            y = topLeft.y;
+            width = bottomRight.x - topLeft.x;
+            height = bottomRight.y - topLeft.y;
+        }
+
+        console.log('bounds', bounds);
+
+        // Create the popup content with normalized coordinates
+        const popupContent = `
+        <story>
+            <label>${a.body[0].value}</label>
+            <region x="${x}" y="${y}" width="${width}" height="${height}" />
+            <html>${a.body[0].value}</html>
+        </story>
+        `;
+        showPopup(popupContent, a);
+        console.log('popupContent', popupContent);
+    });
+
+    // Reset the button color
     button.style.color = '#fff';
-  });
+
+    return anno;
 }
 
+
+        // Function to toggle drawing tool
+        function toggleDrawingTool() {
+          currentTool = (currentTool === 'rect') ? 'polygon' : 'rect';
+          anno.setDrawingTool(currentTool);
+          document.getElementById('toggleButton').innerText = `Current Tool: ${currentTool}`;
+      }
+
+  // Function to load i18n JSON files
+async function loadI18nData(beehive_lang) {
+  try {
+      const response = await fetch(`./js/i18n/${beehive_lang}.json`);
+      if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      i18n_data[beehive_lang] = await response.json();
+  } catch (error) {
+      console.error("Unable to fetch i18n data:", error);
+  }
+}
+function copyToClipboard(elementId) {
+  // Get the text field
+  var copyText = document.getElementById(elementId);
+
+  // Select the text field
+  copyText.select();
+  copyText.setSelectionRange(0, 99999); // For mobile devices
+
+  // Copy the text inside the text field
+  navigator.clipboard.writeText(copyText.value).then(function() {
+      // Alert the copied text
+      alert("Copied the text: " + copyText.value);
+  }).catch(function(error) {
+      console.error("Failed to copy text: ", error);
+  });
+}
+function showPopup(popupContent, a) {
+  // Convert JSON object to a collapsible tree view
+  function jsonTree(object) {
+      let json = "<ul>";
+      for (let prop in object) {
+          let value = object[prop];
+          if (typeof value === "object") {
+              let token = Math.random().toString(36).substr(2, 16);
+              json += `<li><a class='label' href='#${token}' data-toggle='collapse'>${prop}</a><div id='${token}' class='collapse'>${jsonTree(value)}</div></li>`;
+          } else {
+              json += `<li>${prop}: ${value}</li>`;
+          }
+      }
+      return json + "</ul>";
+  }
+
+  // Display JSON object in the textarea
+  document.getElementById('jsonTextArea').value = JSON.stringify(a, null, 2);
+
+  // Display and edit HTML content
+  document.getElementById('htmlTextArea').value = popupContent;
+  updatePreview();
+
+  // Show the popup
+  document.getElementById('popup').style.display = 'block';
+}
+
+function updatePreview() {
+  const htmlContent = document.getElementById('htmlTextArea').value;
+  document.getElementById('htmlPreview').innerHTML = htmlContent;
+}
+
+  /* Used by actual on-screen annotorious make annotation stuff, which
+   we're not really using at present */
+   function annotate(anno) {
+
+    };
+  
+  // Parse the bounds from the annotation
+  function parseBounds(bounds) {
+
+    // Step 1: Extract the numeric part of the string
+    const numericPart = bounds.split('pixel:')[1];
+    
+    // Step 2: Convert the string to an array of numbers
+    const [x, y, width, height] = numericPart.split(',').map(Number);
+    
+    // Step 3: Use the values
+    console.log(`x="${x}" y="${y}" width="${width}" height="${height}"`);
+    
+  }
 /* In admin mode, we use annotorious, and change it's display
    to give us the coordinates in a form we can just paste into
    a narrative.xml file */
-function addShowRegionPlugin() {
+/*function addShowRegionPlugin() {
 
   annotorious.plugin.ShowRegionPlugin = function(opt_config_options) { }
 
@@ -681,37 +873,45 @@ function addShowRegionPlugin() {
 
   // Add the plugin like so
   anno.addPlugin('ShowRegionPlugin', {});
-}
+}*/
 
 // Pass in an OpenSeadragon Rect, usually representing current
 // viewport bounds. We will calculate proximity of the defined
 // scenes to try to find which scene most matches
 // what you are looking at.
+// Function to calculate the most proximate scene based on the current viewport bounds
 function calcProximateScene(rect) {
-  var maxCoverage = 0;
-  var maxLi = null;
+  var maxCoverage = 0; // Initialize the maximum coverage to zero
+  var maxLi = null; // Initialize the variable to store the list item with the maximum coverage
 
+  // Iterate over each list item in the story list
   $("#storyList > li").each(function(i, li) {
-    var rectArea = rect.width * rect.height;
+    var rectArea = rect.width * rect.height; // Calculate the area of the current viewport rectangle
 
-    // Bad, this should be encapsulated somehow
+    // Retrieve the story data attached to the current list item
     var story = $(li).find(".story").data("beehive-story");
 
+    // Create a new OpenSeadragon.Rect object for the story's region
     var storyRect = new OpenSeadragon.Rect(parseFloat(story.region.x),
       parseFloat(story.region.y),
       parseFloat(story.region.width),
       parseFloat(story.region.height));
 
+    // Calculate the intersection between the current viewport rectangle and the story's region
     var intersectRect = rectIntersect(rect, storyRect);
-    if (intersectRect !== null) {
-      var storyArea = storyRect.width * storyRect.height;
-      var intersectArea = intersectRect.width * intersectRect.height;
+    if (intersectRect !== null) { // If there is an intersection
+      var storyArea = storyRect.width * storyRect.height; // Calculate the area of the story's region
+      var intersectArea = intersectRect.width * intersectRect.height; // Calculate the area of the intersection
 
+      // Calculate the percentage of the story's region that is intersected
       var storyIntersectPct = intersectArea / storyArea;
+      // Calculate the percentage of the viewport that is intersected
       var viewIntersectPct  = intersectArea / rectArea;
 
-      var coverage          = (1.2 * storyIntersectPct) + viewIntersectPct;
+      // Calculate the coverage score, giving more weight to the story's intersection percentage
+      var coverage = (1.2 * storyIntersectPct) + viewIntersectPct;
 
+      // If the coverage is significant and greater than the current maximum coverage, update maxCoverage and maxLi
       if (storyIntersectPct > 0.1 && viewIntersectPct > 0.1 && coverage > maxCoverage) {
         maxCoverage = coverage;
         maxLi = li;
@@ -719,28 +919,30 @@ function calcProximateScene(rect) {
     }
   });
 
-  return maxLi;
+  return maxLi; // Return the list item with the maximum coverage
 }
 
-// Returns null if no intersection, otherwise Openseadragon.Rect
-// of the intersection.
+// Function to calculate the intersection of two rectangles
+// Returns null if no intersection, otherwise returns an OpenSeadragon.Rect of the intersection
 function rectIntersect(rectA, rectB) {
-  var xL = Math.max(rectA.x, rectB.x);
-  var xR = Math.min(rectA.x + rectA.width, rectB.x + rectB.width);
+  var xL = Math.max(rectA.x, rectB.x); // Calculate the leftmost x-coordinate of the intersection
+  var xR = Math.min(rectA.x + rectA.width, rectB.x + rectB.width); // Calculate the rightmost x-coordinate of the intersection
 
-  if (xL >= xR) {
+  if (xL >= xR) { // If there is no horizontal intersection, return null
     return null;
   }
 
-  var yT = Math.max(rectA.y, rectB.y);
-  var yB = Math.min(rectA.y + rectA.height, rectB.y + rectB.height);
+  var yT = Math.max(rectA.y, rectB.y); // Calculate the topmost y-coordinate of the intersection
+  var yB = Math.min(rectA.y + rectA.height, rectB.y + rectB.height); // Calculate the bottommost y-coordinate of the intersection
 
-  if (yT >= yB) {
+  if (yT >= yB) { // If there is no vertical intersection, return null
     return null;
   }
 
-  return new OpenSeadragon.Rect(xL, yB, xR-xL, yB-yT);
+  // Return a new OpenSeadragon.Rect representing the intersection
+  return new OpenSeadragon.Rect(xL, yB, xR - xL, yB - yT);
 }
+
 
 
 
@@ -758,29 +960,30 @@ jQuery( document ).ready(function( $ ) {
   // Once on load
   storyListHeightLimit();
 
-  applyI18nValues(beehive_lang);
+  loadI18nData(beehive_lang);
 
-  openSeadragonViewer.addHandler('animation-finish', function(target, info) {
-    // If the animation finished after we explicitly loaded a scene,
-    // do NOT re-calculate and load a DIFFERENT scene!
-    if (sceneTransitionMode) {
-      sceneTransitionMode = false;
-      return;
-    }
+// This is an event handler that is called when an animation finishes in the OpenSeadragon viewer
+openSeadragonViewer.addHandler('animation-finish', function(target, info) {
+  // If the animation was triggered by explicitly loading a scene, don't recalculate the scene
+  if (sceneTransitionMode) {
+    sceneTransitionMode = false;
+    return;
+  }
 
+  // Get the current viewport bounds
+  var bounds = target.eventSource.viewport.getBounds();
 
-    var bounds = target.eventSource.viewport.getBounds();
+  // Subtract the area reserved for the control panel from the viewport bounds
+  var bestLi = calcProximateScene(subtractPanelFromViewport(bounds));
 
-    var bestLi = calcProximateScene(subtractPanelFromViewport(bounds));
-
-    if (bestLi == null) {
-      // unload any story, but leave 'next' button.
-      $(".controlsText").hide();
-    } else if ($(".controlsText").data("beehive-story-li") == undefined || bestLi != $(".controlsText").data("beehive-story-li").get(0)) {
-      // Load it unless it's already loaded.
-      loadStory(bestLi, false);
-    }
-  });
+  // If no scene matches the current viewport, hide the story panel
+  if (bestLi == null) {
+    $(".controlsText").hide();
+  } else if ($(".controlsText").data("beehive-story-li") == undefined || bestLi != $(".controlsText").data("beehive-story-li").get(0)) {
+    // If a scene matches the current viewport and it's not already loaded, load it
+    loadStory(bestLi, false);
+  }
+});
 
   // for some reason keypress event doesn't work in chrome,
   // keydown or keyup do. let's go with keydown. in chrome
