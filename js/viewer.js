@@ -101,6 +101,16 @@ function loadStory(li, move) {
       parseFloat(story.region.width),
       parseFloat(story.region.height));
 
+  // Debugging statements
+  console.log("Story region:", story.region);
+  console.log("Calculated rect:", rect);
+
+    // Ensure rect values are valid
+    if (isNaN(rect.x) || isNaN(rect.y) || isNaN(rect.width) || isNaN(rect.height)) {
+      console.error("Invalid rect values:", rect);
+      return;
+    }
+
   // Save the li in data for next/prev
   $(".controlsText").data("beehive-story-li", li);
 
@@ -188,9 +198,14 @@ function withSlowOSDAnimation(f) {
 // This function adjusts a given rectangle to make room for the control panel
 function adjustRectForPanel(rect) {
   var newRect = jQuery.extend(true, {}, rect)
-
   var reservedPortion = panelReservedPortion();
 
+    // Ensure reservedPortion is valid
+    if (isNaN(reservedPortion) || reservedPortion <= 0 || reservedPortion >= 1) {
+      console.error("Invalid reservedPortion value:", reservedPortion);
+      reservedPortion = 0; // Default to a reasonable value
+    }
+  
   // Increase the width of the rectangle to account for the reserved portion
   var newWidth = rect.width / (1 - reservedPortion);
   newRect.x = rect.x - (newWidth - rect.width);
@@ -228,6 +243,11 @@ function panelReservedPortion() {
     parseInt(overlay.css("margin-left")) +
     parseInt(overlay.css("margin-right"));
 
+      // Ensure containerWidth and panelWidth are valid
+  if (containerWidth === 0 || isNaN(panelWidth)) {
+    console.error("Invalid container or panel width.");
+    return 0.2; // Default to a reasonable value
+  }
   // Return the ratio of the panel width to the container width
   return (panelWidth / containerWidth);
 }
@@ -260,7 +280,13 @@ function setupOpenSeadragonViewer() {
       pinchRotate: true
     },
   });
-}
+    // Ensure the container has valid dimensions
+    var container = document.getElementById('openseadragon');
+    if (container.clientWidth === 0 || container.clientHeight === 0) {
+      console.error("OpenSeadragon container has invalid dimensions.");
+    }
+  }
+
 
 function addControls() {
   var controls = $("#overlayControls");
@@ -583,7 +609,21 @@ function storyListHeightLimit() {
   var container = $("#openseadragon");
   // Select the panel element that contains the overlay controls
   var panel = $("#overlayControls");
+  // Check if the screen width is smaller than 768px
+  if ($(window).width() < 768) {
+    // On small screens, set the maximum height of the panel to the remaining height
+    // after subtracting the height of the navigation controls
+    var navControlsHeight = $("#navControls").outerHeight(true);
+    var maxPanelHeight = container.height() - navControlsHeight - 20; // 20px bottom margin
+    panel.position().bottom -
+    parseInt(panel.css('margin-bottom')) -
+    20; // 20px bottom margin we want
+  // Set the calculated maximum height to both the story list and the story text area
+  panel.find(".controls-story-list, .controlsText").each(function(i, section) {
+    $(section).css("max-height", maxPanelHeight);
+  });
 
+  } else {
   // Calculate the maximum height for the panel
   // This is the height of the container minus the top position of the panel,
   // minus the top margin of the panel, minus an additional 20 pixels for bottom margin
@@ -609,7 +649,7 @@ function storyListHeightLimit() {
   panel.find(".controls-story-list, .controlsText").each(function(i, section) {
     $(section).css("max-height", maxLowerHeight);
   });
-}
+}}
 
   jQuery(document).ready(function($) {
 
@@ -617,6 +657,10 @@ function storyListHeightLimit() {
     // And again if window changes
     $( window ).resize(function(event) {
       storyListHeightLimit();
+      if (openSeadragonViewer) {
+        openSeadragonViewer.viewport.resize();
+        openSeadragonViewer.viewport.goHome(true);
+      }
     });
   });
 
@@ -645,18 +689,6 @@ function storyListHeightLimit() {
         $("#toggleButton").show();
         $("#docsButton").show();
 
-        $("#navControls").on("click", "#map-annotate-button", function(event) {
-          event.preventDefault();
-          $("#adminModal").trigger('openModal');
-        });
-
-
-        // Optional: Close the modal when clicking outside of it
-        window.addEventListener('click', function(event) {
-          if (event.target === adminModal) {
-            hideAdminModal();
-          }
-        });
 
         //annotate(anno);
 
@@ -665,6 +697,19 @@ function storyListHeightLimit() {
       }
     });
   }
+
+  
+  $("#navControls").on("click", "#map-annotate-button", function(event) {
+    event.preventDefault();
+    $("#adminModal").trigger('openModal');
+
+  });
+  // Optional: Close the modal when clicking outside of it
+  window.addEventListener('click', function(event) {
+    if (event.target === adminModal) {
+      $("#adminModal").trigger('closeModal');
+    }
+  });
 
   function setupAnnotorious() {
     // Initialize Annotorious with OpenSeadragon viewer
