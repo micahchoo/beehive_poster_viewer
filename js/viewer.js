@@ -10,6 +10,8 @@ var beehive_poster;
 var beehive_lang;
 var anno=null;
 var currentTool;
+var annotation = [];
+
 
 /* Internationalization (i18n) -- all little text from the UI are in two hashes,
    one english (en), one spanish (es). */
@@ -699,11 +701,24 @@ function storyListHeightLimit() {
   }
 
   
-  $("#navControls").on("click", "#map-annotate-button", function(event) {
-    event.preventDefault();
-    $("#adminModal").trigger('openModal');
-
+  $("#map-annotate-button").click(function() {
+    document.getElementById('adminModal').style.display = 'block';
+   // $("#adminModal").trigger('openModal');
   });
+  
+  function downloadJSON(data, filename) {
+    const jsonStr = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+  
   // Optional: Close the modal when clicking outside of it
   window.addEventListener('click', function(event) {
     if (event.target === adminModal) {
@@ -726,11 +741,8 @@ function storyListHeightLimit() {
     document.getElementById('toggleButton').innerText = `Drawing tool: ${currentTool}`;
     anno.setDrawingTool(currentTool);
     document.getElementById('toggleButton').addEventListener('click', toggleDrawingTool);
-    // Get the annotate button and set its initial color
-    var button = document.getElementById('map-annotate-button');
-    button.style.color = '#777';
+
     // Array to store annotations
-    var annotation = [];
 
     // Event listener for creating annotations
     anno.on('createAnnotation', function(a) {
@@ -797,7 +809,6 @@ function storyListHeightLimit() {
     });
 
     // Reset the button color
-    button.style.color = '#fff';
 
     return anno;
 }
@@ -839,7 +850,7 @@ function copyToClipboard(elementId) {
   });
 }
 function showPopup(popupContent, a) {
-  // Convert JSON object to a collapsible tree view
+  // Convert JSON object to a tree view
   function jsonTree(object) {
       let json = "<ul>";
       for (let prop in object) {
@@ -863,7 +874,17 @@ function showPopup(popupContent, a) {
 
   // Show the popup
   document.getElementById('popup').style.display = 'block';
+  
+// Initialize the close on click outside functionality
+//closePopupOnClickOutside('popup');
 }
+
+// Function to close the popup when clicking outside of it
+function closeOnClickOutside(ElementId) {
+  const elementa = document.getElementById(ElementId);
+  elementa.style.display = 'none';
+}
+
 
 function updatePreview() {
   const htmlContent = document.getElementById('htmlTextArea').value;

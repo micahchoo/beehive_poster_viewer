@@ -67,9 +67,9 @@
       <!-- button to toggle mode to add annotations live. We don't
            really use except for testing/dev. Starts out hidden, we
           show it if admin interface.  -->
-      <button id="map-annotate-button" style="display:none">press shift and drag to create an annotation</button>
-  <button id="toggleButton" style="display:none"></button>
-  <button id="docsButton"style="display:none"><a href ="./docs/">More instructions</a></button>
+      <button id="map-annotate-button" style="display: none;">press shift and drag to create an annotation</button>
+  <button id="toggleButton" style="display: none;"></button>
+  <button id="docsButton" style="display: none;"><a href ="./docs/">More instructions</a></button>
 </div>
 
 
@@ -159,10 +159,10 @@
 
 
 
-  <div id="adminModal" class="adminModal" style="display:none">
-    <div class="modal-content">    
-      <span class="close">&times;</span>
-    <h2 data-i18n-key="admin_mode">Instructions for Adding Annotations</h2>
+  <div id="adminModal" style="display: none;">
+    <div class="container">    
+      <button  onclick="closeOnClickOutside('adminModal')">Close</button>
+      <h2 data-i18n-key="admin_mode">Instructions for Adding Annotations</h2>
       <ol>
         <li>Press <strong>Shift</strong> and drag to create an annotation.</li>
         <li>Open the inspect page console with the keyboard or by right-clicking and selecting "Inspect".</li>
@@ -185,20 +185,28 @@
     
   </div>
   <div id="popup" class="popup" style="display: none;">
-    <h3>JSON Object</h3>
-    <textarea id="jsonTextArea" readonly></textarea><br>
-    <button class="copy-btn" onclick="copyToClipboard('jsonTextArea')">Copy JSON to Clipboard</button>
+    <button  onclick="closeOnClickOutside('popup')">Close</button>
+
     <div class="two-column-section">
       <div class="column">
-    <h3>Editable HTML Content</h3>
+    <h3>Editable story content</h3>
+    <p>Will appear as chapter on sidebar if copied to narrative/{poster}/{lang}.xml</p>
     <textarea id="htmlTextArea" oninput="updatePreview()"></textarea><br>
-    <button class="copy-btn" onclick="copyToClipboard('htmlTextArea')">Copy HTML to Clipboard</button>
+    <button class="copy-btn" onclick="copyToClipboard('htmlTextArea')">Copy Story</button>
   </div>
   <div class="column">
     <h3>HTML Preview</h3>
     <div id="htmlPreview" class="preview"></div>
   </div>
 </div>
+    
+    <h3>According to W3C web Annotations Standard</h3>
+    <p>Probably more future proof format</p>
+    <textarea id="jsonTextArea" readonly></textarea><br>
+    <button class="copy-btn" onclick="copyToClipboard('jsonTextArea')">Copy W3C annotation to Clipboard</button>
+    <button class="copy-all" onclick="downloadJSON(annotation, 'annotations.json');">Save all canvas annotations as json</button>
+
+
 </div>
 
   </body>
