@@ -26,6 +26,8 @@ That will try to load the tile images designated as 'mr', and by default, that w
 the filename out of the URL, because we set it as a default "index"
 file in the .htaccess)
 
+[Demo - https://micahchoo.github.io/beehive_poster_viewer/viewer.html?admin=true&poster=mr&lang=en](https://micahchoo.github.io/beehive_poster_viewer/viewer.html?admin=true&poster=mr&lang=en)
+
 ## Features of the posterViewer you may miss
 
 Notice the small honeycomb-shaped icons in the upper left corner.
