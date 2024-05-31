@@ -24,7 +24,7 @@ That will try to load the tile images designated as 'mr', and by default, that w
 
 (This actually accesses the file viewer.html, but you can leave
 the filename out of the URL, because we set it as a default "index"
-file in the .htaccess)
+file in the .htaccess) - this wont work for a gh-pages deploy
 
 [Demo - https://micahchoo.github.io/beehive_poster_viewer/viewer.html?admin=true&poster=mr&lang=en](https://micahchoo.github.io/beehive_poster_viewer/viewer.html?admin=true&poster=mr&lang=en)
 
