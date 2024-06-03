@@ -43,4 +43,4 @@ This command will start a local server with CORS enabled, allowing you to test t
 - [Adding and Editing Narrative - the chapters on the sidebar](./docs/narrative.md)
 - [Adding Facebook OpenGraph tags](./docs/facebook_og.md)
 
-For more detailed instructions and documentation, visit the [Beehive Poster Viewer documentation](https://micahchoo.github.io/beehive_poster_viewer/docs/).
+For more detailed instructions and documentation, visit the [Beehive Poster Viewer documentation](https://micahchoo.github.io/beehive_poster_viewer/docs/) or read the [Wiki](https://github.com/micahchoo/beehive_poster_viewer/wiki/Overview).

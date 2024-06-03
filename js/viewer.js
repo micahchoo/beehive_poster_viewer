@@ -262,7 +262,8 @@ function setupOpenSeadragonViewer() {
      and we're too lazy to make a closure right now */
 
   //eg  "./tiles/mr-inside/mr-inside.dzi"
-  var dziFile = "./tiles/" + beehive_poster + "/" + beehive_poster + ".dzi"
+  var dziFile = "./tiles/" + beehive_poster + "/" + beehive_poster + ".dzi";
+  var jpgFile ="./tiles/eu/eu.jpg";
 
   window.openSeadragonViewer = OpenSeadragon({
     id: "openseadragon",
@@ -270,7 +271,9 @@ function setupOpenSeadragonViewer() {
     showNavigator: false,
     autoHideControls: false,
     prefixUrl: "./openseadragon-bin-4.1.0/images/",
-    tileSources: dziFile,
+    tileSources: [dziFile,jpgFile],
+    sequenceMode: true,
+    preserveViewport: true,    
     // We tell OSD to use our own nav buttons, easier than
     // trying to customize OSD's
     zoomInButton: 'zoomInBtn',
@@ -278,9 +281,6 @@ function setupOpenSeadragonViewer() {
     homeButton: 'fullPosterBtn',
     //fullPageButton: 'fullPageBtn',
     minZoomImageRatio: 0.7,
-    gestureSettingsTouch: {
-      pinchRotate: true
-    },
   });
     // Ensure the container has valid dimensions
     var container = document.getElementById('openseadragon');

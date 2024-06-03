@@ -160,7 +160,7 @@ html, body{
   background-image:url(../images/minus_brown_07.png);
   background-image:url(../images/minus_blue_07.png);
   position: relative;
-  top:29px;
+  top:28px;
   left:-25px;
 }
 #zoomOutBtn:hover {
@@ -180,7 +180,7 @@ html, body{
   background-image:url(../images/fullscreen_blue_07.png);
   position: relative;
   top:28px;
-  left:-75px;
+  left:-76px;
 }
 #fullPageBtn:hover {
   background-image:url(../images/fullscreen_brown_07.png);
@@ -189,22 +189,30 @@ html, body{
   background-image:url(../images/link_brown_07.png);
   background-image:url(../images/link_blue_07.png);
   position: relative;
-  left:-98px;
+  left:-100px;
 }
 #makePermaLink:hover {
   background-image:url(../images/link_brown_07.png);
+}
+#infoBtn {
+  background-image:url(../images/about_brown_07.png);
+  background-image:url(../images/about_blue_07.png);
+  position: relative;
+  left:-125px;
+  top:28px;
+}
+#infoBtn:hover {
+  background-image:url(../images/about_brown_07.png);
 }
 #showControlsBtn {
   background-image:url(../images/menu_brown_07.png);
   background-image:url(../images/menu_blue_07.png);
   position: relative;
-  top:28px;
-  left:-122px;
+  left:-150px;
 }
 #showControlsBtn:hover {
   background-image:url(../images/menu_brown_07.png);
 }
-
 
 
 /*******************
